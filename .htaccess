@@ -1,0 +1,3 @@
+<Files ".smtp_pass">
+    Deny from all
+</Files>

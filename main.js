@@ -136,7 +136,7 @@ function handleSubmit(e) {
         } else {
             btn.innerHTML = '<span>Envoyer ma demande</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
             btn.disabled = false;
-            alert('Erreur lors de l\'envoi. Veuillez réessayer ou nous contacter par téléphone.');
+            alert('Erreur: ' + data.message);
         }
     })
     .catch(() => {

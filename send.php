@@ -9,6 +9,14 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+// ---- CONFIG SMTP ----
+$smtpHost = 'smtp.hostinger.com';
+$smtpPort = 465;
+$smtpUser = 'contact@mugen-agency.fr';
+$smtpPass = trim(file_get_contents(__DIR__ . '/.smtp_pass'));
+$smtpFrom = 'contact@mugen-agency.fr';
+$smtpTo   = 'contact@mugen-agency.fr';
+
 // Récupération des données
 $firstName = htmlspecialchars(trim($_POST['firstName'] ?? ''), ENT_QUOTES, 'UTF-8');
 $lastName = htmlspecialchars(trim($_POST['lastName'] ?? ''), ENT_QUOTES, 'UTF-8');
@@ -53,43 +61,78 @@ $projectLabel = $projectLabels[$projectType] ?? $projectType;
 $budgetLabel = $budgetLabels[$budget] ?? $budget;
 $sourceLabel = $sourceLabels[$source] ?? $source;
 
-// Construction de l'email
-$to = 'contact@mugen-agency.fr';
+// Construction du message
 $subject = "Nouvelle demande de $firstName $lastName - $projectLabel";
+$bodyText = "===========================================\r\n";
+$bodyText .= "  NOUVELLE DEMANDE - MUGEN AGENCY\r\n";
+$bodyText .= "===========================================\r\n\r\n";
+$bodyText .= "Prénom : $firstName\r\n";
+$bodyText .= "Nom : $lastName\r\n";
+$bodyText .= "Email : $email\r\n\r\n";
+$bodyText .= "Projet : $projectLabel\r\n";
+$bodyText .= "Budget : $budgetLabel\r\n";
+$bodyText .= "Source : $sourceLabel\r\n\r\n";
+$bodyText .= "-------------------------------------------\r\n";
+$bodyText .= "MESSAGE :\r\n";
+$bodyText .= "-------------------------------------------\r\n";
+$bodyText .= "$message\r\n\r\n";
+$bodyText .= "-------------------------------------------\r\n";
+$bodyText .= "Envoyé depuis mugen-agency.fr\r\n";
 
-$body = "
-===========================================
-  NOUVELLE DEMANDE - MUGEN AGENCY
-===========================================
+// ---- ENVOI SMTP ----
+function smtpSend($host, $port, $user, $pass, $from, $to, $replyTo, $subject, $body) {
+    $socket = fsockopen("ssl://$host", $port, $errno, $errstr, 10);
+    if (!$socket) return "Connexion impossible: $errstr ($errno)";
 
-Prénom : $firstName
-Nom : $lastName
-Email : $email
+    $resp = fgets($socket, 512);
+    if (substr($resp, 0, 3) !== '220') return "Erreur serveur: $resp";
 
-Projet : $projectLabel
-Budget : $budgetLabel
-Source : $sourceLabel
+    $commands = [
+        "EHLO mugen-agency.fr",
+        "AUTH LOGIN",
+        base64_encode($user),
+        base64_encode($pass),
+        "MAIL FROM:<$from>",
+        "RCPT TO:<$to>",
+        "DATA"
+    ];
 
--------------------------------------------
-MESSAGE :
--------------------------------------------
-$message
+    $expectedCodes = ['250', '334', '334', '235', '250', '250', '354'];
 
--------------------------------------------
-Envoyé depuis mugen-agency.fr
-";
+    foreach ($commands as $i => $cmd) {
+        fputs($socket, $cmd . "\r\n");
+        $resp = fgets($socket, 512);
+        if (substr($resp, 0, 3) !== $expectedCodes[$i]) {
+            fputs($socket, "QUIT\r\n");
+            fclose($socket);
+            return "Erreur SMTP ($cmd): $resp";
+        }
+    }
 
-$headers = "From: Mugen Agency <noreply@mugen-agency.fr>\r\n";
-$headers .= "Reply-To: $email\r\n";
-$headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
-$headers .= "X-Mailer: Mugen Agency Contact Form\r\n";
+    // Headers + body
+    $headers = "From: Mugen Agency <$from>\r\n";
+    $headers .= "To: <$to>\r\n";
+    $headers .= "Reply-To: <$replyTo>\r\n";
+    $headers .= "Subject: =?UTF-8?B?" . base64_encode($subject) . "?=\r\n";
+    $headers .= "MIME-Version: 1.0\r\n";
+    $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
+    $headers .= "Date: " . date('r') . "\r\n";
+    $headers .= "\r\n";
 
-// Envoi
-$sent = mail($to, $subject, $body, $headers);
+    fputs($socket, $headers . $body . "\r\n.\r\n");
+    $resp = fgets($socket, 512);
 
-if ($sent) {
+    fputs($socket, "QUIT\r\n");
+    fclose($socket);
+
+    return (substr($resp, 0, 3) === '250') ? true : "Erreur envoi: $resp";
+}
+
+$result = smtpSend($smtpHost, $smtpPort, $smtpUser, $smtpPass, $smtpFrom, $smtpTo, $email, $subject, $bodyText);
+
+if ($result === true) {
     echo json_encode(['success' => true, 'message' => 'Message envoyé avec succès']);
 } else {
     http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Erreur lors de l\'envoi']);
+    echo json_encode(['success' => false, 'message' => $result]);
 }
