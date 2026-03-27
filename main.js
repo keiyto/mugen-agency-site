@@ -1,5 +1,5 @@
 /* =============================================
-   MAIN.JS – PixelCraft Studio
+   MAIN.JS – Mugen Agency
    ============================================= */
 
 // ---- THEME TOGGLE ----
@@ -122,10 +122,28 @@ function handleSubmit(e) {
     btn.innerHTML = '<span>Envoi en cours...</span>';
     btn.disabled = true;
 
-    setTimeout(() => {
-        form.style.display = 'none';
-        success.style.display = 'block';
-    }, 1200);
+    const formData = new FormData(form);
+
+    fetch('send.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            form.style.display = 'none';
+            success.style.display = 'block';
+        } else {
+            btn.innerHTML = '<span>Envoyer ma demande</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+            btn.disabled = false;
+            alert('Erreur lors de l\'envoi. Veuillez réessayer ou nous contacter par téléphone.');
+        }
+    })
+    .catch(() => {
+        btn.innerHTML = '<span>Envoyer ma demande</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+        btn.disabled = false;
+        alert('Erreur de connexion. Veuillez réessayer ou nous contacter par téléphone.');
+    });
 }
 
 // ---- CURSOR GLOW EFFECT ----
