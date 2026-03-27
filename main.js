@@ -112,39 +112,7 @@ const sectionObserver = new IntersectionObserver((entries) => {
 
 sections.forEach(s => sectionObserver.observe(s));
 
-// ---- CONTACT FORM SUBMIT ----
-function handleSubmit(e) {
-    e.preventDefault();
-    const btn = document.getElementById('submitBtn');
-    const form = document.getElementById('contactForm');
-    const success = document.getElementById('formSuccess');
-
-    btn.innerHTML = '<span>Envoi en cours...</span>';
-    btn.disabled = true;
-
-    const formData = new FormData(form);
-
-    fetch('send.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            form.style.display = 'none';
-            success.style.display = 'block';
-        } else {
-            btn.innerHTML = '<span>Envoyer ma demande</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
-            btn.disabled = false;
-            alert('Erreur: ' + data.message);
-        }
-    })
-    .catch(() => {
-        btn.innerHTML = '<span>Envoyer ma demande</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
-        btn.disabled = false;
-        alert('Erreur de connexion. Veuillez réessayer ou nous contacter par téléphone.');
-    });
-}
+// ---- CONTACT FORM (handled by FormSubmit.co) ----
 
 // ---- CURSOR GLOW EFFECT ----
 const cursorGlow = document.createElement('div');

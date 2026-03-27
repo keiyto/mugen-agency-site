@@ -687,7 +687,11 @@
         </div>
 
         <div class="reveal reveal-delay-2">
-          <form class="contact-form" id="contactForm" onsubmit="handleSubmit(event)">
+          <form class="contact-form" id="contactForm" action="https://formsubmit.co/contact@mugen-agency.fr" method="POST">
+            <input type="hidden" name="_subject" value="Nouvelle demande - Mugen Agency">
+            <input type="hidden" name="_captcha" value="false">
+            <input type="hidden" name="_next" value="https://mugen-agency.fr/merci.html">
+            <input type="hidden" name="_template" value="box">
             <div class="form-row">
               <div class="form-group">
                 <label class="form-label" for="firstName">Prénom</label>
@@ -738,14 +742,11 @@
               <label class="form-label" for="message">Décrivez votre projet</label>
               <textarea class="form-textarea" id="message" name="message" placeholder="Parlez-nous de votre activité, vos objectifs, vos délais..." required></textarea>
             </div>
-            <button type="submit" class="btn btn-primary form-submit" id="submitBtn">
+            <button type="submit" class="btn btn-primary form-submit">
               <span>Envoyer ma demande</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </button>
           </form>
-          <div id="formSuccess" style="display:none; margin-top:20px; padding:20px; background:rgba(52,211,153,0.1); border:1px solid rgba(52,211,153,0.3); border-radius:12px; color:#34d399; text-align:center;">
-            Merci ! Nous vous recontactons dans les 24h.
-          </div>
         </div>
       </div>
     </div>
