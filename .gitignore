@@ -2,5 +2,7 @@ node_modules/
 deploy/
 *.zip
 server.js
+send.php
+.smtp_pass
 Docs/
 Mugen Agency/

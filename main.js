@@ -60,41 +60,6 @@ const revealObserver = new IntersectionObserver((entries) => {
 
 revealElements.forEach(el => revealObserver.observe(el));
 
-// ---- COUNTER ANIMATION ----
-function animateCounter(el, target, duration = 2000) {
-    const suffix = el.dataset.suffix || '';
-    const start = performance.now();
-    const update = (now) => {
-        const elapsed = now - start;
-        const progress = Math.min(elapsed / duration, 1);
-        const ease = 1 - Math.pow(1 - progress, 3);
-        const current = Math.round(ease * target);
-        el.textContent = current + suffix;
-        if (progress < 1) {
-            requestAnimationFrame(update);
-        }
-    };
-    requestAnimationFrame(update);
-}
-
-const statNumbers = document.querySelectorAll('.stat-num[data-count]');
-let countersStarted = false;
-
-const statsObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting && !countersStarted) {
-            countersStarted = true;
-            statNumbers.forEach((el, i) => {
-                const target = parseInt(el.dataset.count);
-                setTimeout(() => animateCounter(el, target, 1800), i * 150);
-            });
-        }
-    });
-}, { threshold: 0.5 });
-
-const statsBar = document.querySelector('.stats-bar');
-if (statsBar) statsObserver.observe(statsBar);
-
 // ---- SMOOTH ACTIVE LINK HIGHLIGHT ----
 const sections = document.querySelectorAll('section[id]');
 const navAnchors = document.querySelectorAll('.nav-links a[href^="#"]');
@@ -111,8 +76,6 @@ const sectionObserver = new IntersectionObserver((entries) => {
 }, { threshold: 0.3 });
 
 sections.forEach(s => sectionObserver.observe(s));
-
-// ---- CONTACT FORM (handled by FormSubmit.co) ----
 
 // ---- CURSOR GLOW EFFECT ----
 const cursorGlow = document.createElement('div');
