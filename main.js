@@ -77,34 +77,6 @@ const sectionObserver = new IntersectionObserver((entries) => {
 
 sections.forEach(s => sectionObserver.observe(s));
 
-// ---- CONTACT FORM SUBMIT (EmailJS) ----
-function handleSubmit(e) {
-    e.preventDefault();
-    const form = document.getElementById('contactForm');
-    const btn = form.querySelector('.form-submit');
-
-    // Labels lisibles pour les selects
-    const projectSelect = form.querySelector('#projectType');
-    const budgetSelect = form.querySelector('#budget');
-    const sourceSelect = form.querySelector('#source');
-    document.getElementById('projectTypeLabel').value = projectSelect.options[projectSelect.selectedIndex]?.text || '';
-    document.getElementById('budgetLabel').value = budgetSelect.options[budgetSelect.selectedIndex]?.text || '';
-    document.getElementById('sourceLabel').value = sourceSelect.options[sourceSelect.selectedIndex]?.text || '';
-
-    btn.innerHTML = '<span>Envoi en cours...</span>';
-    btn.disabled = true;
-
-    emailjs.sendForm('service_mfymbpp', 'template_a8d6dtp', form)
-        .then(() => {
-            form.innerHTML = '<div style="padding:40px 20px; text-align:center; color:#34d399;"><p style="font-size:1.2rem; font-weight:600; margin-bottom:8px;">Merci pour votre message !</p><p style="color:var(--text-secondary);">Nous vous recontactons sous 24h ouvrées.</p></div>';
-        })
-        .catch(() => {
-            btn.innerHTML = '<span>Envoyer ma demande</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
-            btn.disabled = false;
-            alert('Erreur lors de l\'envoi. Appelez-nous au 06 58 48 61 15.');
-        });
-}
-
 // ---- CURSOR GLOW EFFECT ----
 const cursorGlow = document.createElement('div');
 cursorGlow.style.cssText = `
