@@ -687,12 +687,10 @@
         </div>
 
         <div class="reveal reveal-delay-2">
-          <form class="contact-form" id="contactForm" action="https://formsubmit.co/sad.keiyto@gmail.com" method="POST">
-            <input type="hidden" name="_cc" value="contact@mugen-agency.fr">
-            <input type="hidden" name="_subject" value="Nouvelle demande - Mugen Agency">
-            <input type="hidden" name="_captcha" value="false">
-            <input type="hidden" name="_next" value="https://mugen-agency.fr/merci.html">
-            <input type="hidden" name="_template" value="box">
+          <form class="contact-form" id="contactForm" onsubmit="handleSubmit(event)">
+            <input type="hidden" name="projectType_label" id="projectTypeLabel">
+            <input type="hidden" name="budget_label" id="budgetLabel">
+            <input type="hidden" name="source_label" id="sourceLabel">
             <div class="form-row">
               <div class="form-group">
                 <label class="form-label" for="firstName">Prénom</label>
@@ -803,6 +801,8 @@
     </div>
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script>emailjs.init('BkS-A4aEX804zr77p');</script>
   <script src="main.js"></script>
 </body>
 </html>
