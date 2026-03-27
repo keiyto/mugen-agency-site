@@ -81,7 +81,7 @@ sections.forEach(s => sectionObserver.observe(s));
 function handleSubmit(e) {
     e.preventDefault();
     const form = document.getElementById('contactForm');
-    const btn = form.querySelector('button[type="submit"]');
+    const btn = form.querySelector('.form-submit');
 
     // Labels lisibles pour les selects
     const projectSelect = form.querySelector('#projectType');
